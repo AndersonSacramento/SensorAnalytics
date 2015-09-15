@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
   </head>
   <body>
-    <p>Devices</p>
-    <output id="list"></output>
 
+    <output id="list"></output>
+    
     <script>
       function showListDevices(devices){
       var output = [];
@@ -38,5 +38,34 @@
        window.location="deviceTasks.html";
      }
     </script>
+
+
+
+
+    
+    <p>Duration(s): <input type="number" id="duration"></p>
+    <p>Frequency(ms): <input type="number" id="frequency"></p>
+    <button type="button" onclick="myFunction()">New Task</button>
+    <script>
+	function myFunction() {
+	var device  =  localStorage.getItem("device");
+	alert(device);
+	var duration = document.getElementById("duration");
+	var frequency  = document.getElementById("frequency");
+	var data = new FormData();
+	data.append('device_name', device.value);
+	data.append('duration_seconds', duration.value);
+	data.append('frequency_milliseconds', frequency.value);
+
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST','http://localhost:8080/taskAgenda' , true);
+	xhr.onload = function () {
+	// do something to response
+	console.log(this.responseText);
+	};
+	xhr.send(data);
+	window.location="results.html";
+	}
+      </script>
   </body>
 </html>
