@@ -9,5 +9,22 @@
     <!--<script src="hightcharts.js"></script>-->
     <div id="container" style="width:100%; height:400px;"></div>
     <p>Página de resultados.</p>
+    <script>
+      
+      function getListDevices() {
+      var devices = [];
+      var conn = new XMLHttpRequest();
+      conn.open("GET", 'http://localhost:8080/taskResults?device='+localStorage.getItem("device"));
+      conn.onreadystatechange = function(){
+      if(conn.readyState==4){
+           dev_tasks = JSON.parse(conn.responseText);
+           console.log(dev_tasks);
+           localStorage.setItem(dev_tasks.indexOf(dev_tasks.length-1), {'results':null,'done':false});
+           showListDevices(dev_tasks);
+         }
+    };
+    conn.send();
+    }
+    </script>
   </body>
 </html>

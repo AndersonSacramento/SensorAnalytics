@@ -5,58 +5,22 @@
   </head>
   <body>
 
-    <output id="list"></output>
-    
-    <script>
-      function showListDevices(devices){
-      var output = [];
-       for (var i = 0, d;  d = devices[i]; i++) {
-      output.push('<li><strong>', d, '</strong>',' <button type="button" name="btn" onclick="callDeviceTasks(this);">Tasks</button>',
-        '</li>');
-      }
-      document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-      }
-      function getListDevices() {
-      var devices = [];
-      var conn = new XMLHttpRequest();
-      conn.open("GET", 'http://localhost:8080/dev');
-      conn.onreadystatechange = function(){
-      if(conn.readyState==4){
-           devices = JSON.parse(conn.responseText);
-           console.log(devices);
-           showListDevices(devices);
-         }
-    };
-    conn.send();
-    }
-    window.onload = getListDevices;
-
-      function callDeviceTasks(node){
-      var device = node.parentNode.childNodes[0].innerHTML;
-      alert(device);
-      localStorage.setItem("device",device);
-       window.location="deviceTasks.html";
-     }
-    </script>
-
-
-
-
-    
     <p>Duration(s): <input type="number" id="duration"></p>
     <p>Frequency(ms): <input type="number" id="frequency"></p>
     <button type="button" onclick="myFunction()">New Task</button>
+     <output id="list_task"></output>
     <script>
-	function myFunction() {
-	var device  =  localStorage.getItem("device");
-	alert(device);
+      function myFunction() {
+        var client_name = localStorage.getItem("client");
+	var device_name  =  localStorage.getItem("device");
+	alert(device_name);
 	var duration = document.getElementById("duration");
 	var frequency  = document.getElementById("frequency");
 	var data = new FormData();
-	data.append('device_name', device.value);
+	data.append('device_name', device_name);
 	data.append('duration_seconds', duration.value);
 	data.append('frequency_milliseconds', frequency.value);
-
+        data.append('client_name',client_name);
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST','http://localhost:8080/taskAgenda' , true);
 	xhr.onload = function () {
@@ -64,8 +28,50 @@
 	console.log(this.responseText);
 	};
 	xhr.send(data);
-	window.location="results.html";
+
+      window.location="deviceTasks.html";
 	}
       </script>
+    
+
+   
+    <script>
+      function showListTasksByDevice(dev_tasks){
+      var output = [];
+       for (var i = 0;  i < dev_tasks.length; i++) {
+      output.push('<li><strong>', dev_tasks[i].toString(), '</strong>',' <button type="button" name="show" onclick="showResultTask(this);">show</button>',
+					  '</li>');
+      }
+      document.getElementById('list_task').innerHTML = '<ul>' + output.join('') + '</ul>';
+      }
+
+      function getListTasks() {
+      var client_name = localStorage.getItem("client");
+      var device_name = localStorage.getItem("device");
+      var devices = [];
+      var conn = new XMLHttpRequest();
+      conn.open("GET", 'http://localhost:8080/taskAgenda?device_name='+device_name+'&'+
+         'client_name='+client_name
+      );
+      conn.onreadystatechange = function(){
+      if(conn.readyState==4){
+           response = conn.reponseText;
+           dev_tasks = JSON.parse(conn.responseText);
+           console.log(dev_tasks);
+           showListTasksByDevice(dev_tasks);
+      }
+    };
+    conn.send();
+    }
+      window.onload = getListTasks;
+
+      function showResultTask(node){
+      var dev_task = node.parentNode.childNodes[0].innerHTML;
+      alert(dev_task);
+      localStorage.setItem("dev_task",dev_task);
+       window.location="results.html";
+     }
+    </script>
+
   </body>
 </html>
